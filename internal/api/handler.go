@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jfernando/loadbalancer/internal/registry"
+	"github.com/xinnaider/flux/internal/registry"
 )
 
 type Handler struct {
@@ -191,7 +191,9 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("[api] write json error: %v", err)
+	}
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {

@@ -16,9 +16,24 @@ This starts:
 - **flux** on port `8080`
 - **Redis 7** on port `6379`
 
+## Public Image (Pull & Run)
+
+The flux image is published to GitHub Container Registry as a public image — no login or clone needed:
+
+```bash
+docker run -e REDIS_ADDR=host.docker.internal:6379 -p 8080:8080 ghcr.io/xinnaider/flux
+```
+
+Pull it explicitly if you want a specific version:
+
+```bash
+docker pull ghcr.io/xinnaider/flux
+docker pull ghcr.io/xinnaider/flux:<sha>
+```
+
 ## Docker Build
 
-Build the image locally:
+Build the image locally from source:
 
 ```bash
 docker build -t flux .

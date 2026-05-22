@@ -160,7 +160,9 @@ func (r *RedisRegistry) GetInstance(ctx context.Context, name string) (*Instance
 		}
 
 		port := 0
-		fmt.Sscanf(vals["port"], "%d", &port)
+		if _, err := fmt.Sscanf(vals["port"], "%d", &port); err != nil {
+			port = 0
+		}
 		conns, _ := strToInt64(vals["connections"])
 
 		if best == nil || conns < bestConns {
@@ -201,7 +203,9 @@ func (r *RedisRegistry) ListInstances(ctx context.Context, name string) ([]*Inst
 			continue
 		}
 		port := 0
-		fmt.Sscanf(vals["port"], "%d", &port)
+		if _, err := fmt.Sscanf(vals["port"], "%d", &port); err != nil {
+			port = 0
+		}
 		conns, _ := strToInt64(vals["connections"])
 		instances = append(instances, &Instance{
 			ID:                id,

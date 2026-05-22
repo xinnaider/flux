@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jfernando/loadbalancer/internal/registry"
+	"github.com/xinnaider/flux/internal/registry"
 )
 
 // Checker runs periodic cleanup of expired instances.

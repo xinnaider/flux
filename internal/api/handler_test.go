@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jfernando/loadbalancer/internal/registry"
+	"github.com/xinnaider/flux/internal/registry"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -77,7 +77,9 @@ func TestRegisterEndpoint(t *testing.T) {
 	}
 
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
 
 	if _, ok := result["instance_id"]; !ok {
 		t.Error("missing instance_id in response")
@@ -105,9 +107,12 @@ func TestHeartbeatEndpoint(t *testing.T) {
 	defer teardown()
 
 	ctx := context.Background()
-	id, _ := reg.Register(ctx, registry.RegisterRequest{
+	id, err := reg.Register(ctx, registry.RegisterRequest{
 		Name: "ms.auth", Host: "10.0.0.1", Port: 3001,
 	})
+	if err != nil {
+		t.Fatalf("register: %v", err)
+	}
 
 	body := `{"name":"ms.auth","instance_id":"` + id + `","active_connections":42}`
 	resp, err := http.Post(server.URL+"/heartbeat", "application/json", strings.NewReader(body))
@@ -120,7 +125,10 @@ func TestHeartbeatEndpoint(t *testing.T) {
 		t.Errorf("expected 200, got %d", resp.StatusCode)
 	}
 
-	insts, _ := reg.ListInstances(ctx, "ms.auth")
+	insts, err := reg.ListInstances(ctx, "ms.auth")
+	if err != nil {
+		t.Fatalf("list instances: %v", err)
+	}
 	if len(insts) > 0 && insts[0].ActiveConnections != 42 {
 		t.Errorf("expected connections=42, got %d", insts[0].ActiveConnections)
 	}
@@ -131,9 +139,11 @@ func TestRedirectEndpoint(t *testing.T) {
 	defer teardown()
 
 	ctx := context.Background()
-	reg.Register(ctx, registry.RegisterRequest{
+	if _, err := reg.Register(ctx, registry.RegisterRequest{
 		Name: "ms.auth", Host: "10.0.0.1", Port: 3001,
-	})
+	}); err != nil {
+		t.Fatalf("register: %v", err)
+	}
 
 	client := noRedirectClient()
 	resp, err := client.Get(server.URL + "/ms.auth/login")
@@ -187,9 +197,11 @@ func TestRedirectPreservesQuery(t *testing.T) {
 	defer teardown()
 
 	ctx := context.Background()
-	reg.Register(ctx, registry.RegisterRequest{
+	if _, err := reg.Register(ctx, registry.RegisterRequest{
 		Name: "ms.auth", Host: "10.0.0.1", Port: 3001,
-	})
+	}); err != nil {
+		t.Fatalf("register: %v", err)
+	}
 
 	client := noRedirectClient()
 	resp, err := client.Get(server.URL + "/ms.auth/callback?code=abc&state=123")

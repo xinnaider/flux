@@ -83,9 +83,11 @@ func TestHeartbeatRenewsTTL(t *testing.T) {
 
 	ctx := context.Background()
 
-	reg.Register(ctx, RegisterRequest{
+	if _, err := reg.Register(ctx, RegisterRequest{
 		Name: "ms.auth", Host: "10.0.0.1", Port: 3001, HealthURL: "/health",
-	})
+	}); err != nil {
+		t.Fatalf("register: %v", err)
+	}
 
 	// Verify instance exists.
 	insts, err := reg.ListInstances(ctx, "ms.auth")
@@ -142,7 +144,9 @@ func TestRelease(t *testing.T) {
 	})
 
 	// Set connections to 5.
-	reg.Heartbeat(ctx, HeartbeatRequest{Name: "ms.auth", InstanceID: id, ActiveConnections: 5})
+	if err := reg.Heartbeat(ctx, HeartbeatRequest{Name: "ms.auth", InstanceID: id, ActiveConnections: 5}); err != nil {
+		t.Fatalf("heartbeat: %v", err)
+	}
 
 	// Release 1.
 	err := reg.Release(ctx, "ms.auth", id)
@@ -174,9 +178,15 @@ func TestListInstances(t *testing.T) {
 
 	ctx := context.Background()
 
-	reg.Register(ctx, RegisterRequest{Name: "ms.auth", Host: "10.0.0.1", Port: 3001})
-	reg.Register(ctx, RegisterRequest{Name: "ms.auth", Host: "10.0.0.2", Port: 3002})
-	reg.Register(ctx, RegisterRequest{Name: "ms.other", Host: "10.0.0.3", Port: 3003})
+	mustRegister := func(t *testing.T, req RegisterRequest) {
+		t.Helper()
+		if _, err := reg.Register(ctx, req); err != nil {
+			t.Fatalf("register %s@%s:%d: %v", req.Name, req.Host, req.Port, err)
+		}
+	}
+	mustRegister(t, RegisterRequest{Name: "ms.auth", Host: "10.0.0.1", Port: 3001})
+	mustRegister(t, RegisterRequest{Name: "ms.auth", Host: "10.0.0.2", Port: 3002})
+	mustRegister(t, RegisterRequest{Name: "ms.other", Host: "10.0.0.3", Port: 3003})
 
 	insts, err := reg.ListInstances(ctx, "ms.auth")
 	if err != nil {

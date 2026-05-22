@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jfernando/loadbalancer/internal/api"
-	"github.com/jfernando/loadbalancer/internal/config"
-	"github.com/jfernando/loadbalancer/internal/health"
-	"github.com/jfernando/loadbalancer/internal/registry"
+	"github.com/xinnaider/flux/internal/api"
+	"github.com/xinnaider/flux/internal/config"
+	"github.com/xinnaider/flux/internal/health"
+	"github.com/xinnaider/flux/internal/registry"
 	"github.com/redis/go-redis/v9"
 )
 

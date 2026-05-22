@@ -1,4 +1,4 @@
-module github.com/jfernando/loadbalancer
+module github.com/xinnaider/flux
 
 go 1.22.0
 

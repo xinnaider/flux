@@ -8,8 +8,22 @@ flux stores service instances in Redis, receives heartbeat load from each instan
 
 ## Quick Start
 
+### With Docker (public image, no clone needed)
+
 ```bash
-# Start the registry + Redis
+docker run -d --name redis redis:7-alpine
+docker run -d --name flux --link redis -e REDIS_ADDR=redis:6379 -p 8080:8080 ghcr.io/xinnaider/flux
+
+# Check it's alive
+curl http://localhost:8080/health
+# {"status":"ok"}
+```
+
+### With Docker Compose (recommended for development)
+
+```bash
+git clone https://github.com/xinnaider/flux
+cd flux
 docker compose up -d
 
 # Check it's alive
@@ -136,10 +150,21 @@ go run ./cmd/server
 go build -o bin/flux ./cmd/server
 ./bin/flux
 
-# With Docker
+# With Docker (build local)
 docker build -t flux .
 docker run -p 8080:8080 --network host flux
 ```
+
+## Public Image
+
+Pull the official image from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/xinnaider/flux
+docker run -e REDIS_ADDR=host.docker.internal:6379 -p 8080:8080 ghcr.io/xinnaider/flux
+```
+
+The image is public — no login required.
 
 ---
 
