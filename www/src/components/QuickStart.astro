@@ -1,0 +1,171 @@
+---
+const curlRegister = `curl -X POST http://localhost:8080/register \\
+  -H "Content-Type: application/json" \\
+  -d '{"name":"my-service","address":"10.0.0.1:9000"}'`;
+
+const curlDiscover = `curl http://localhost:8080/discover/my-service
+# 302 Found → http://10.0.0.1:9000`;
+---
+
+<section class="quickstart-section reveal" id="quickstart">
+  <div class="quickstart-inner">
+    <h2 class="section-label reveal reveal-delay-1">Quick Start</h2>
+    <p class="quickstart-lead reveal reveal-delay-2">Try it in 30 seconds. Start flux, register a service, discover it.</p>
+
+    <div class="code-block reveal reveal-delay-3">
+      <div class="code-header">
+        <span class="code-lang">Shell</span>
+        <button class="copy-btn cta-button" data-copy={curlRegister}>Copy</button>
+      </div>
+      <pre class="code-body"><code><span class="code-prompt">$</span><span class="cursor-pulse">▌</span> {curlRegister}</code></pre>
+    </div>
+
+    <div class="code-block code-result reveal reveal-delay-4">
+      <div class="code-header">
+        <span class="code-lang">Response</span>
+      </div>
+      <pre class="code-body"><code><span class="code-prompt">$</span> curl http://localhost:8080/discover/my-service
+<span class="code-output">302 Found</span>
+<span class="code-output code-dim">Location: http://10.0.0.1:9000</span></code></pre>
+    </div>
+
+    <div class="quickstart-cta reveal">
+      <a href="/guides/quick-start/" class="cta-button cta-primary">Full documentation →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+.quickstart-section {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg);
+}
+.quickstart-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6);
+  width: 100%;
+}
+.quickstart-lead {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-8);
+}
+.code-block {
+  background: var(--color-bg-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.code-lang {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.copy-btn {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.5);
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+}
+.copy-btn:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+}
+.code-body {
+  padding: var(--space-4) var(--space-5);
+  margin: 0;
+  overflow-x: auto;
+}
+.code-body code {
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  line-height: var(--lh-mono);
+  color: rgba(255,255,255,0.8);
+  white-space: pre;
+}
+.code-prompt {
+  color: var(--color-success);
+  margin-right: var(--space-2);
+}
+.code-output {
+  color: var(--color-success);
+}
+.code-dim {
+  opacity: 0.6;
+}
+.quickstart-cta {
+  margin-top: var(--space-8);
+  text-align: center;
+}
+.quickstart-cta .cta-primary {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-base);
+  text-decoration: none;
+  line-height: 1;
+}
+.quickstart-cta .cta-primary:hover {
+  background: var(--color-accent-hover);
+}
+
+/* Copy feedback toast */
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-bg-dark);
+  color: var(--color-text-inverse);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  z-index: 200;
+  pointer-events: none;
+}
+.toast.visible {
+  opacity: 1;
+}
+</style>
+
+<script>
+// Copy button functionality
+document.querySelectorAll('[data-copy]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const text = btn.getAttribute('data-copy');
+    try {
+      await navigator.clipboard.writeText(text);
+      const toast = document.getElementById('copy-toast');
+      if (toast) {
+        toast.textContent = 'Copied!';
+        toast.classList.add('visible');
+        setTimeout(() => toast.classList.remove('visible'), 2000);
+      }
+    } catch { /* fallback */ }
+  });
+});
+</script>

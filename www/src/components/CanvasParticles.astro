@@ -1,0 +1,145 @@
+---
+// 2D Canvas particle system — nodes connected by flowing lines
+// No dependencies, lightweight, respects reduced motion
+---
+
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<style>
+  #particles-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #particles-canvas { display: none; }
+  }
+</style>
+
+<script>
+(function() {
+  const canvas = document.getElementById("particles-canvas");
+  if (!canvas) return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion) return;
+
+  const ctx = canvas.getContext("2d");
+  let w, h;
+  let nodes = [];
+  let mouse = { x: -999, y: -999 };
+  let animId;
+
+  const COLORS = {
+    accent: [199, 53, 31],    // #c7351f
+    blue: [26, 48, 64],       // #1a3040
+    gold: [212, 167, 106],    // #d4a76a
+    line: [26, 48, 64],       // #1a3040
+  };
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function initNodes() {
+    const count = Math.min(Math.floor((w * h) / 25000), 40);
+    nodes = [];
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: 2 + Math.random() * 3,
+        color: Math.random() > 0.6 ? COLORS.accent : Math.random() > 0.5 ? COLORS.gold : COLORS.blue,
+        opacity: 0.2 + Math.random() * 0.4,
+      });
+    }
+    // Ensure a prominent "active" node
+    nodes[0].r = 5;
+    nodes[0].color = COLORS.accent;
+    nodes[0].opacity = 0.8;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw connections (closer = more opaque)
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const maxDist = 180;
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.2;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.strokeStyle = `rgba(${COLORS.line[0]}, ${COLORS.line[1]}, ${COLORS.line[2]}, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Mouse connection
+    for (const n of nodes) {
+      const dx = n.x - mouse.x;
+      const dy = n.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 200) {
+        const alpha = (1 - dist / 200) * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.strokeStyle = `rgba(${COLORS.accent[0]}, ${COLORS.accent[1]}, ${COLORS.accent[2]}, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    // Draw nodes
+    for (const n of nodes) {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${n.color[0]}, ${n.color[1]}, ${n.color[2]}, ${n.opacity})`;
+      ctx.fill();
+
+      // Pulse ring on active node
+      if (n.r > 4) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * 2.5, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${n.color[0]}, ${n.color[1]}, ${n.color[2]}, 0.15)`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    // Move
+    for (const n of nodes) {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  function onMouseMove(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  }
+
+  window.addEventListener("resize", () => { resize(); initNodes(); });
+  window.addEventListener("mousemove", onMouseMove);
+
+  resize();
+  initNodes();
+  draw();
+})();
+</script>

@@ -1,0 +1,119 @@
+/* ===== flux Interaction Animations ===== */
+
+/* ── Entrance (scroll reveal) ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-normal) var(--ease-out),
+              transform var(--dur-normal) var(--ease-out);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 100ms; }
+.reveal-delay-2 { transition-delay: 200ms; }
+.reveal-delay-3 { transition-delay: 300ms; }
+.reveal-delay-4 { transition-delay: 400ms; }
+
+/* ── Hero stagger (mount) ── */
+.hero-stagger {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+}
+.hero-stagger.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-stagger:nth-child(1) { transition-delay: 0ms; }
+.hero-stagger:nth-child(2) { transition-delay: 100ms; }
+.hero-stagger:nth-child(3) { transition-delay: 200ms; }
+.hero-stagger:nth-child(4) { transition-delay: 300ms; }
+
+/* ── Card hover ── */
+.card-lift {
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(26, 48, 64, 0.1);
+}
+.card-lift .card-icon {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.card-lift:hover .card-icon {
+  transform: scale(1.05);
+}
+
+/* ── CTA button ── */
+.cta-button {
+  transition: background var(--dur-instant) var(--ease-out),
+              transform var(--dur-instant) var(--ease-out);
+  cursor: pointer;
+}
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+/* ── Nav link underline ── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--color-accent);
+  transition: width var(--dur-fast) var(--ease-out);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ── Code block copy button ── */
+.copy-btn {
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.code-block:hover .copy-btn {
+  opacity: 1;
+}
+
+/* ── Terminal cursor pulse ── */
+@keyframes cursor-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.cursor-pulse {
+  animation: cursor-pulse 1s step-end infinite;
+}
+
+/* ── Table row hover ── */
+.table-row-hover {
+  transition: background var(--dur-instant) var(--ease-out);
+}
+.table-row-hover:hover {
+  background: color-mix(in srgb, var(--color-accent-muted) 30%, transparent);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal, .hero-stagger {
+    opacity: 1;
+    transform: none;
+  }
+  .copy-btn {
+    opacity: 1;
+  }
+}

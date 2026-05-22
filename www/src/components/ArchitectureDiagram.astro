@@ -1,0 +1,178 @@
+---
+import Logo from "./Logo.astro";
+---
+
+<section class="arch-section reveal" id="architecture">
+  <div class="arch-inner">
+    <h2 class="section-label reveal reveal-delay-1">Architecture</h2>
+    <div class="arch-diagram reveal reveal-delay-2">
+      <!-- Client -->
+      <div class="arch-node">
+        <div class="arch-node-icon client-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="arch-label">Client</span>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arch-arrow">
+        <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true">
+          <line x1="0" y1="12" x2="36" y2="12" stroke="#c7351f" stroke-width="1.5"/>
+          <polyline points="30,6 36,12 30,18" stroke="#c7351f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="arch-arrow-label">302 redirect</span>
+      </div>
+
+      <!-- flux node -->
+      <div class="arch-node arch-flux">
+        <div class="arch-node-icon flux-icon">
+          <Logo variant="icon" size={40} />
+        </div>
+        <span class="arch-label arch-flux-label">flux</span>
+      </div>
+
+      <!-- Fork arrows -->
+      <div class="arch-forks">
+        <div class="arch-arrow fork-arrow">
+          <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true">
+            <line x1="0" y1="12" x2="36" y2="12" stroke="#1a3040" stroke-width="1.5"/>
+            <polyline points="30,6 36,12 30,18" stroke="#1a3040" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="arch-arrow fork-arrow fork-down">
+          <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true">
+            <line x1="0" y1="12" x2="36" y2="12" stroke="#1a3040" stroke-width="1.5"/>
+            <polyline points="30,6 36,12 30,18" stroke="#1a3040" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="arch-node arch-service">
+        <div class="arch-node-icon service-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="arch-label">Service A</span>
+      </div>
+      <div class="arch-node arch-service arch-service-b">
+        <div class="arch-node-icon service-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="arch-label">Service B</span>
+      </div>
+
+      <!-- Redis -->
+      <div class="arch-redis-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Redis-backed
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.arch-section {
+  padding: var(--space-24) 0;
+  background: var(--color-bg-card);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.arch-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+.arch-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  position: relative;
+  padding: var(--space-12) 0;
+}
+.arch-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+.arch-node-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+}
+.client-icon { color: var(--color-text-secondary); }
+.flux-icon {
+  border-color: var(--color-accent);
+  background: #fff;
+}
+.service-icon { color: var(--color-text-primary); }
+.arch-label {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+.arch-flux-label {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+.arch-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+.arch-arrow-label {
+  font-family: var(--font-code);
+  font-size: 10px;
+  color: var(--color-accent);
+}
+.arch-forks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.fork-arrow svg line { stroke: var(--color-text-secondary); }
+.fork-arrow svg polyline { stroke: var(--color-text-secondary); }
+.arch-redis-badge {
+  position: absolute;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-code);
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+  .arch-diagram {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .arch-forks {
+    flex-direction: row;
+  }
+  .arch-arrow { transform: rotate(90deg); }
+  .fork-down { transform: rotate(90deg); }
+}
+</style>

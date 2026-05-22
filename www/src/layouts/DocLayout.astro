@@ -1,0 +1,321 @@
+---
+// DocLayout.astro — wraps all documentation pages
+import "@styles/tokens.css";
+import "@styles/animations.css";
+import "@styles/dark-theme.css";
+import Header from "@components/Header.astro";
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const pageTitle = Astro.props.content?.title || Astro.props.title;
+const pageDescription = Astro.props.content?.description || Astro.props.description;
+const title = pageTitle || "Documentation";
+
+const sidebar = [
+  {
+    label: "Getting Started",
+    items: [
+      { slug: "/guides/quick-start/", label: "Quick Start" },
+      { slug: "/guides/how-it-works/", label: "How It Works" },
+      { slug: "/guides/configuration/", label: "Configuration" },
+    ],
+  },
+  {
+    label: "API Reference",
+    items: [
+      { slug: "/api/register/", label: "POST /register" },
+      { slug: "/api/heartbeat/", label: "POST /heartbeat" },
+      { slug: "/api/discover/", label: "GET /{service}" },
+      { slug: "/api/release/", label: "POST /release" },
+      { slug: "/api/unregister/", label: "POST /unregister" },
+      { slug: "/api/health/", label: "GET /health" },
+    ],
+  },
+  {
+    label: "Deployment",
+    items: [
+      { slug: "/deployment/docker/", label: "Docker" },
+      { slug: "/deployment/redis/", label: "Redis" },
+      { slug: "/deployment/production/", label: "Production" },
+    ],
+  },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | flux</title>
+    {pageDescription && <meta name="description" content={pageDescription} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Block white flash -->
+    <script is:inline>(function(){var d=document.documentElement;var s=document.createElement('style');s.textContent='html{background:#0d151c;color-scheme:dark}';document.head.appendChild(s);if(!localStorage.getItem("flux-theme"))localStorage.setItem("flux-theme","dark");d.setAttribute("data-theme",localStorage.getItem("flux-theme"))})()</script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=DM+Serif+Display&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="doc-shell">
+      <!-- Same navbar as landing page -->
+      <Header />
+
+      <div class="doc-body">
+        <!-- Sidebar -->
+        <aside class="doc-sidebar">
+          {sidebar.map((group) => (
+            <div class="sidebar-group">
+              <h4 class="sidebar-group-label">{group.label}</h4>
+              <ul class="sidebar-items">
+                {group.items.map((item) => (
+                  <li>
+                    <a
+                      href={item.slug}
+                      class:list={{ "sidebar-link": true, "sidebar-link--active": Astro.url.pathname === item.slug }}
+                    >{item.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </aside>
+
+        <!-- Content -->
+        <main class="doc-content">
+          <article class="doc-article">
+            <slot />
+          </article>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Ensure html bg follows theme (overrides FOUC-prevention style) */
+  :global(html) { background: var(--color-bg); }
+
+  /* Shell: full-page container */
+  .doc-shell {
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Push content below fixed header */
+  .doc-body {
+    display: flex;
+    flex: 1;
+    padding-top: 60px; /* clears fixed Header */
+  }
+
+  /* ── Sidebar ── */
+  .doc-sidebar {
+    width: 16rem;
+    flex-shrink: 0;
+    padding: 1.5rem 1rem;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+  .sidebar-group {
+    margin-bottom: 1.5rem;
+  }
+  .sidebar-group-label {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sidebar-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-items li {
+    margin-bottom: 0.125rem;
+  }
+  .sidebar-link {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    transition: color var(--dur-fast), background var(--dur-fast);
+  }
+  .sidebar-link:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-card);
+  }
+  .sidebar-link--active {
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+    font-weight: 700;
+  }
+
+  /* ── Content ── */
+  .doc-content {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    max-width: 48rem;
+    overflow-x: auto;
+  }
+  .doc-article {
+    line-height: var(--lh-relaxed);
+  }
+
+  /* Headings */
+  .doc-article :global(h1) {
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-heading);
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    line-height: var(--lh-tight);
+  }
+  .doc-article :global(h2) {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-heading);
+    color: var(--color-text-primary);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color-border);
+    line-height: var(--lh-tight);
+  }
+  .doc-article :global(h3) {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-heading);
+    color: var(--color-text-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Body text */
+  .doc-article :global(p) {
+    margin-bottom: 1rem;
+    color: var(--color-text-secondary);
+  }
+  .doc-article :global(a) {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  .doc-article :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  /* Inline code */
+  .doc-article :global(code) {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    background: var(--color-bg-code);
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-inverse);
+  }
+
+  /* Code blocks + ASCII art */
+  .doc-article :global(pre) {
+    font-family: var(--font-code);
+    font-size: var(--text-sm);
+    line-height: var(--lh-mono);
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    color: var(--color-text-inverse);
+  }
+  .doc-article :global(pre code) {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  /* Lists */
+  .doc-article :global(ul),
+  .doc-article :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    color: var(--color-text-secondary);
+  }
+  .doc-article :global(li) {
+    margin-bottom: 0.25rem;
+  }
+
+  /* Tables */
+  .doc-article :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: var(--text-sm);
+  }
+  .doc-article :global(th),
+  .doc-article :global(td) {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+  }
+  .doc-article :global(th) {
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+  .doc-article :global(td) {
+    color: var(--color-text-secondary);
+  }
+
+  /* Blockquotes */
+  .doc-article :global(blockquote) {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  /* Horizontal rule */
+  .doc-article :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+  }
+
+  /* Images */
+  .doc-article :global(img) {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 48rem) {
+    .doc-body {
+      flex-direction: column;
+    }
+    .doc-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+      padding: 1rem;
+    }
+    .doc-content {
+      padding: 1.25rem;
+    }
+  }
+</style>

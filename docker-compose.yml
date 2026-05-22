@@ -1,0 +1,31 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  registry:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      REDIS_ADDR: "redis:6379"
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      HEARTBEAT_TTL: "15s"
+      CLEANUP_INTERVAL: "5s"
+      REQUEST_TIMEOUT: "30s"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:

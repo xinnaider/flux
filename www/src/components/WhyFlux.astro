@@ -1,0 +1,126 @@
+---
+const comparisons = [
+  { metric: "Latency overhead", flux: "~1ms (DNS + redirect)", proxy: "Proxy buffer + forward (varies)" },
+  { metric: "Traffic model", flux: "Client direct to service", proxy: "All traffic through proxy" },
+  { metric: "Configuration", flux: "REST API, no config files", proxy: "YAML/conf, reload required" },
+  { metric: "Scaling", flux: "Stateless, add more flux nodes", proxy: "Scale proxy pool + config sync" },
+  { metric: "Best for", flux: "Service discovery + redirect", proxy: "Traffic inspection, TLS termination" },
+];
+---
+
+<section class="why-section reveal" id="why">
+  <div class="why-inner">
+    <h2 class="section-label reveal reveal-delay-1">Why Flux?</h2>
+    <p class="why-lead reveal reveal-delay-2">
+      Flux is not a proxy. It tells the client where to go — and gets out of the way.
+    </p>
+
+    <div class="table-wrapper reveal reveal-delay-3">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="col-flux">flux</th>
+            <th class="col-proxy">Reverse Proxy (nginx, HAProxy, Envoy)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparisons.map((row) => (
+            <tr class="table-row-hover">
+              <td class="metric-cell">{row.metric}</td>
+              <td class="col-flux">{row.flux}</td>
+              <td class="col-proxy">{row.proxy}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="why-takeaway reveal">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="color:var(--color-accent)">
+        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Use flux when you need service discovery + redirect. Use a reverse proxy when you need traffic inspection, TLS termination, or content routing.</span>
+    </div>
+  </div>
+</section>
+
+<style>
+.why-section {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-card);
+}
+.why-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: var(--space-6);
+  width: 100%;
+}
+.why-lead {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-8);
+}
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+.compare-table th,
+.compare-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+.compare-table thead th {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+.col-flux {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+.col-proxy {
+  color: var(--color-text-secondary);
+}
+.metric-cell {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.why-takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-normal);
+  color: var(--color-text-primary);
+}
+.why-takeaway svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+</style>

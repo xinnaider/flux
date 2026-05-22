@@ -1,0 +1,168 @@
+---
+export type LogoVariant = "icon" | "wordmark" | "stacked" | "favicon";
+
+interface Props {
+  variant?: LogoVariant;
+  size?: number;
+  class?: string;
+}
+
+const { variant = "wordmark", size = 96, class: className = "" } = Astro.props;
+
+const iconSize = variant === "icon" ? size : variant === "wordmark" ? 56 : 48;
+const textSize = size > 80 ? 32 : size > 50 ? 28 : 22;
+---
+
+{variant === "icon" && (
+  <svg
+    width={iconSize}
+    height={iconSize}
+    viewBox="0 0 96 96"
+    fill="none"
+    class={`logo-svg ${className}`}
+    aria-hidden="true"
+  >
+    <line x1="38" y1="34" x2="24" y2="62" class="l-line" stroke-width="1.5"/>
+    <line x1="58" y1="34" x2="72" y2="62" class="l-line" stroke-width="1.5"/>
+    <line x1="30" y1="70" x2="66" y2="70" class="l-line" stroke-width="1.5"/>
+    <circle cx="48" cy="28" r="14" fill="none" class="l-gold" stroke-width="2.5"/>
+    <circle cx="48" cy="28" r="5" class="l-gold"/>
+    <circle cx="24" cy="68" r="10" fill="none" class="l-node" stroke-width="2.5"/>
+    <circle cx="24" cy="68" r="4" class="l-node"/>
+    <circle cx="72" cy="68" r="12" fill="none" class="l-accent" stroke-width="2.5"/>
+    <circle cx="72" cy="68" r="5" class="l-accent"/>
+    <circle cx="72" cy="68" r="16" fill="none" class="l-accent-pulse" stroke-width="1"/>
+  </svg>
+)}
+
+{variant === "wordmark" && (
+  <div class={`logo-wordmark ${className}`}>
+    <svg
+      width={iconSize}
+      height={iconSize}
+      viewBox="0 0 56 56"
+      fill="none"
+      class="logo-svg"
+      aria-hidden="true"
+    >
+      <line x1="23" y1="20" x2="15" y2="37" class="l-line" stroke-width="1.2"/>
+      <line x1="33" y1="20" x2="41" y2="37" class="l-line" stroke-width="1.2"/>
+      <line x1="18" y1="41" x2="38" y2="41" class="l-line" stroke-width="1.2"/>
+      <circle cx="28" cy="17" r="8" fill="none" class="l-gold" stroke-width="2"/>
+      <circle cx="28" cy="17" r="3" class="l-gold"/>
+      <circle cx="15" cy="40" r="6" fill="none" class="l-node" stroke-width="2"/>
+      <circle cx="15" cy="40" r="2.5" class="l-node"/>
+      <circle cx="41" cy="40" r="7" fill="none" class="l-accent" stroke-width="2"/>
+      <circle cx="41" cy="40" r="3" class="l-accent"/>
+      <circle cx="41" cy="40" r="9.5" fill="none" class="l-accent-pulse" stroke-width="0.8"/>
+    </svg>
+    <div class="logo-text">
+      <span class="logo-name">flux</span>
+      <span class="logo-sub">SERVICE REGISTRY</span>
+    </div>
+  </div>
+)}
+
+{variant === "stacked" && (
+  <div class={`logo-stacked ${className}`}>
+    <svg
+      width={iconSize}
+      height={iconSize}
+      viewBox="0 0 48 48"
+      fill="none"
+      class="logo-svg"
+      aria-hidden="true"
+    >
+      <line x1="20" y1="17" x2="13" y2="32" class="l-line" stroke-width="1"/>
+      <line x1="28" y1="17" x2="35" y2="32" class="l-line" stroke-width="1"/>
+      <line x1="16" y1="35" x2="32" y2="35" class="l-line" stroke-width="1"/>
+      <circle cx="24" cy="14" r="7" fill="none" class="l-gold" stroke-width="2"/>
+      <circle cx="24" cy="14" r="2.5" class="l-gold"/>
+      <circle cx="13" cy="35" r="5" fill="none" class="l-node" stroke-width="2"/>
+      <circle cx="13" cy="35" r="2" class="l-node"/>
+      <circle cx="35" cy="35" r="6" fill="none" class="l-accent" stroke-width="2"/>
+      <circle cx="35" cy="35" r="2.5" class="l-accent"/>
+      <circle cx="35" cy="35" r="8" fill="none" class="l-accent-pulse" stroke-width="0.7"/>
+    </svg>
+    <span class="stacked-name">flux</span>
+    <span class="stacked-sub">SERVICE REGISTRY</span>
+  </div>
+)}
+
+{variant === "favicon" && (
+  <svg
+    width={iconSize}
+    height={iconSize}
+    viewBox="0 0 48 48"
+    fill="none"
+    class={`logo-svg ${className}`}
+    aria-hidden="true"
+  >
+    <rect width="48" height="48" rx="8" fill="var(--color-bg-dark)"/>
+    <line x1="19" y1="17" x2="12" y2="32" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="29" y1="17" x2="36" y2="32" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="15" y1="35" x2="33" y2="35" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <circle cx="24" cy="14" r="7" stroke="var(--color-gold)" stroke-width="2" fill="none"/>
+    <circle cx="24" cy="14" r="2.5" fill="var(--color-gold)"/>
+    <circle cx="12" cy="35" r="5" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    <circle cx="12" cy="35" r="2" fill="rgba(255,255,255,0.5)"/>
+    <circle cx="36" cy="35" r="6" stroke="var(--color-accent)" stroke-width="2" fill="none"/>
+    <circle cx="36" cy="35" r="2.5" fill="var(--color-accent)"/>
+  </svg>
+)}
+
+<style>
+.logo-svg .l-line { stroke: var(--color-text-primary); opacity: 0.25; }
+.logo-svg .l-node { stroke: var(--color-text-primary); }
+.logo-svg .l-node[fill] { fill: var(--color-text-primary); }
+.logo-svg .l-accent { stroke: var(--color-accent); }
+.logo-svg .l-accent[fill] { fill: var(--color-accent); }
+.logo-svg .l-accent-pulse { stroke: var(--color-accent); opacity: 0.3; }
+.logo-svg .l-gold { stroke: var(--color-gold); }
+.logo-svg .l-gold[fill] { fill: var(--color-gold); }
+
+.logo-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+.logo-name {
+  font-family: var(--font-heading);
+  font-size: inherit;
+  font-weight: var(--font-weight-heading);
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.logo-sub {
+  font-family: var(--font-code);
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.logo-stacked {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+.stacked-name {
+  font-family: var(--font-heading);
+  font-size: inherit;
+  font-weight: var(--font-weight-heading);
+  color: inherit;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.stacked-sub {
+  font-family: var(--font-code);
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+</style>

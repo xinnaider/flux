@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Header from "@components/Header.astro";
+import Hero from "@components/Hero.astro";
+import HowItWorks from "@components/HowItWorks.astro";
+import QuickStart from "@components/QuickStart.astro";
+import WhyFlux from "@components/WhyFlux.astro";
+import Footer from "@components/Footer.astro";
+---
+
+<BaseLayout>
+  <Header />
+  <main>
+    <Hero />
+    <HowItWorks />
+    <QuickStart />
+    <WhyFlux />
+  </main>
+  <Footer />
+  <div id="copy-toast" class="toast"></div>
+</BaseLayout>
+
+<script>
+// Scroll reveal — Intersection Observer
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+);
+
+document.querySelectorAll(".reveal, .hero-stagger").forEach((el) => {
+  observer.observe(el);
+});
+</script>

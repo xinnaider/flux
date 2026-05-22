@@ -1,0 +1,31 @@
+/* ===== flux Dark Theme ===== */
+
+[data-theme="dark"] {
+  --color-bg: var(--color-bg-dark-theme);
+  --color-bg-card: var(--color-bg-card-dark);
+  --color-bg-dark: var(--color-bg-dark-alt);
+  --color-bg-code: #0b1116;
+
+  --color-text-primary: var(--color-text-primary-dark);
+  --color-text-secondary: var(--color-text-secondary-dark);
+  --color-text-inverse: var(--color-text-inverse-dark);
+
+  --color-accent: var(--color-accent-dark);
+  --color-accent-hover: var(--color-accent-hover-dark);
+  --color-accent-muted: var(--color-accent-muted-dark);
+
+  --color-border: var(--color-border-dark);
+  --color-gold: var(--color-gold-dark);
+}
+
+[data-theme="dark"] .hero-grid {
+  opacity: 0.06 !important;
+}
+
+[data-theme="dark"] .code-block {
+  border: 1px solid var(--color-border-dark);
+}
+
+[data-theme="dark"] ::selection {
+  background: var(--color-accent-muted-dark);
+}

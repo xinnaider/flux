@@ -1,0 +1,95 @@
+/* ===== flux Design Tokens ===== */
+/* Blueprint — warm, technical, architectural */
+
+:root {
+  /* ── Color (light) ── */
+  --color-bg: #f1ebe3;
+  --color-bg-card: #f6f3ed;
+  --color-bg-dark: #1a3040;
+  --color-bg-code: #1a3040;
+
+  --color-text-primary: #1a3040;
+  --color-text-secondary: #5a6a7a;
+  --color-text-inverse: #f1ebe3;
+
+  --color-accent: #c7351f;
+  --color-accent-hover: #a82a18;
+  --color-accent-muted: #e8d5cd;
+
+  --color-gold: #d4a76a;
+  --color-border: #d9d2c8;
+  --color-success: #2b6e4f;
+
+  /* ── Color (dark) ── */
+  --color-bg-dark-theme: #0d151c;
+  --color-bg-card-dark: #162027;
+  --color-bg-dark-alt: #0b1116;
+  --color-text-primary-dark: #e0d8d0;
+  --color-text-secondary-dark: #889098;
+  --color-text-inverse-dark: #e0d8d0;
+  --color-accent-dark: #e04a30;
+  --color-accent-hover-dark: #ff5a3a;
+  --color-accent-muted-dark: #3a1e18;
+  --color-border-dark: #253038;
+  --color-gold-dark: #d4a76a;
+
+  /* ── Typography ── */
+  --font-heading: "DM Serif Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", "Cascadia Code", monospace;
+
+  --font-weight-heading: 400;
+  --font-weight-body: 400;
+  --font-weight-bold: 700;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+
+  --lh-tight: 1.15;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+  --lh-mono: 1.4;
+
+  /* ── Spacing (8-point grid) ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Border Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* ── Icons ── */
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  /* ── Timing ── */
+  --dur-instant: 100ms;
+  --dur-fast: 200ms;
+  --dur-normal: 300ms;
+  --dur-slow: 500ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
