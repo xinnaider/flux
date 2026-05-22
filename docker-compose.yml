@@ -2,4 +2,4 @@ services:
   www:
     image: ghcr.io/xinnaider/flux-frontend:latest
     ports:
-      - "80:80"
+      - "8000:80"
