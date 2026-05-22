@@ -111,7 +111,8 @@ jobs:
 
             echo "--- Pulling latest compose file ---"
             cd /root/flux
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
 
             echo "--- Pulling pre-built images ---"
             docker compose pull
