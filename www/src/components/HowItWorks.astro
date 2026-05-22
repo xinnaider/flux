@@ -7,12 +7,12 @@ const features = [
     desc: "Redis-backed, TTL-based health tracking. Services expire automatically — no heartbeats, no polling.",
   },
   {
-    title: "Redirect Balancer",
-    desc: "HTTP 302 with round-robin selection. Client goes direct — no proxy overhead, no buffer.",
+    title: "Smart Balancer",
+    desc: "Redirect mode (302) or reverse proxy mode. Least-connections selection. REST API, no config files.",
   },
   {
     title: "Simple API",
-    desc: "RESTful, JSON over HTTP. Register, discover, list — three endpoints, everything you need.",
+    desc: "RESTful, JSON over HTTP. Register, heartbeat, discover — everything you need.",
   },
 ];
 ---
@@ -57,7 +57,7 @@ const features = [
       ))}
     </div>
 
-    <!-- Architecture flow -->
+    <!-- Architecture flow: both modes -->
     <div class="how-flow">
       <div class="flow-node">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -66,6 +66,8 @@ const features = [
         </svg>
         <span>Client</span>
       </div>
+
+      <!-- Redirect path -->
       <div class="flow-arrow">
         <svg width="32" height="16" viewBox="0 0 32 16" fill="none" aria-hidden="true" style="color:var(--color-accent)">
           <line x1="0" y1="8" x2="24" y2="8" stroke="currentColor" stroke-width="1.5"/>
@@ -73,10 +75,19 @@ const features = [
         </svg>
         <span class="flow-label">302</span>
       </div>
+
       <div class="flow-node flow-node-flux">
         <Logo variant="icon" size={28} />
         <span>flux</span>
       </div>
+
+      <div class="flow-mode-switch">
+        <span class="flow-modes">redirect</span>
+        <span class="flow-modes divider">|</span>
+        <span class="flow-modes active">proxy</span>
+      </div>
+
+      <!-- Proxy: flux → backends -->
       <div class="flow-fork">
         <div class="flow-arrow">
           <svg width="32" height="16" viewBox="0 0 32 16" fill="none" aria-hidden="true" style="color:var(--color-text-secondary)">
@@ -91,6 +102,7 @@ const features = [
           </svg>
         </div>
       </div>
+
       <div class="flow-node">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -202,6 +214,26 @@ const features = [
   font-family: var(--font-code);
   font-size: 9px;
   color: var(--color-accent);
+}
+.flow-mode-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.flow-modes {
+  font-family: var(--font-code);
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.flow-modes.active {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+.flow-modes.divider {
+  opacity: 0.3;
 }
 .flow-fork {
   display: flex;

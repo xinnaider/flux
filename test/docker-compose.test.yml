@@ -1,0 +1,124 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    networks:
+      - test-net
+
+  flux:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8080"
+    environment:
+      PORT: "8080"
+      REDIS_ADDR: "redis:6379"
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      HEARTBEAT_TTL: "30s"
+      CLEANUP_INTERVAL: "10s"
+      REQUEST_TIMEOUT: "30s"
+      PROXY_MODE: "true"
+      PROXY_IDLE_CONNS: "200"
+      PROXY_IDLE_PER_HOST: "50"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - test-net
+
+  # ---------- fake backends (scale: up to N instances) ----------
+  fake-app-1:
+    build:
+      context: ./fake-backend
+    environment:
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      INSTANCE_HOST: "fake-app-1"
+      INSTANCE_PORT: "3000"
+    depends_on:
+      - flux
+    networks:
+      - test-net
+
+  fake-app-2:
+    build:
+      context: ./fake-backend
+    environment:
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      INSTANCE_HOST: "fake-app-2"
+      INSTANCE_PORT: "3000"
+    depends_on:
+      - flux
+    networks:
+      - test-net
+
+  fake-app-3:
+    build:
+      context: ./fake-backend
+    environment:
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      INSTANCE_HOST: "fake-app-3"
+      INSTANCE_PORT: "3000"
+    depends_on:
+      - flux
+    networks:
+      - test-net
+
+  # ---------- load testers (4x paralelo) ----------
+  loadtester-1: &loadtester
+    build:
+      context: ./loadtester
+    environment:
+      TESTER_ID: "1"
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      NUM_REQUESTS: "${NUM_REQUESTS:-5000}"
+      CONCURRENCY: "${CONCURRENCY:-1000}"
+    depends_on:
+      - flux
+      - fake-app-1
+      - fake-app-2
+      - fake-app-3
+    networks:
+      - test-net
+
+  loadtester-2:
+    <<: *loadtester
+    environment:
+      TESTER_ID: "2"
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      NUM_REQUESTS: "${NUM_REQUESTS:-5000}"
+      CONCURRENCY: "${CONCURRENCY:-1000}"
+
+  loadtester-3:
+    <<: *loadtester
+    environment:
+      TESTER_ID: "3"
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      NUM_REQUESTS: "${NUM_REQUESTS:-5000}"
+      CONCURRENCY: "${CONCURRENCY:-1000}"
+
+  loadtester-4:
+    <<: *loadtester
+    environment:
+      TESTER_ID: "4"
+      FLUX_URL: "http://flux:8080"
+      SERVICE_NAME: "test-service"
+      NUM_REQUESTS: "${NUM_REQUESTS:-5000}"
+      CONCURRENCY: "${CONCURRENCY:-1000}"
+
+networks:
+  test-net:
+    driver: bridge

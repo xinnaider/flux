@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/xinnaider/flux/internal/balancer"
 	"github.com/xinnaider/flux/internal/registry"
 	"github.com/redis/go-redis/v9"
 )
@@ -189,6 +192,105 @@ func TestHealthEndpoint(t *testing.T) {
 
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("expected 200, got %d", resp.StatusCode)
+	}
+}
+
+func setupTestServerWithProxy(t *testing.T) (*httptest.Server, *registry.RedisRegistry, func()) {
+	t.Helper()
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr: getRedisAddr(),
+		DB:   3,
+	})
+
+	ctx := context.Background()
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		t.Skip("redis not available, skipping test")
+	}
+
+	rdb.FlushDB(ctx)
+
+	reg := registry.NewRedisRegistry(rdb, 30*time.Second)
+	handler := NewHandler(reg)
+
+	proxy := balancer.NewProxy(reg, balancer.ProxyConfig{
+		MaxIdleConns:   10,
+		MaxIdlePerHost: 2,
+	})
+	handler.SetProxy(proxy)
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	server := httptest.NewServer(mux)
+
+	teardown := func() {
+		server.Close()
+		rdb.FlushDB(ctx)
+		rdb.Close()
+	}
+
+	return server, reg, teardown
+}
+
+func TestProxyToBackend(t *testing.T) {
+	// Start a fake backend
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Test", "backend-ok")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"path":"%s","method":"%s"}`, r.URL.Path, r.Method)
+	}))
+	defer backend.Close()
+
+	server, reg, teardown := setupTestServerWithProxy(t)
+	defer teardown()
+
+	ctx := context.Background()
+	// Backend host:port — extract from backend.URL
+	// httptest gives http://127.0.0.1:PORT
+	host := strings.TrimPrefix(backend.URL, "http://")
+	hostParts := strings.Split(host, ":")
+	port := 0
+	fmt.Sscanf(hostParts[1], "%d", &port)
+
+	_, err := reg.Register(ctx, registry.RegisterRequest{
+		Name: "ms.test", Host: hostParts[0], Port: port,
+	})
+	if err != nil {
+		t.Fatalf("register: %v", err)
+	}
+
+	resp, err := http.Get(server.URL + "/ms.test/hello?x=1")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("expected 200, got %d", resp.StatusCode)
+	}
+
+	body, _ := io.ReadAll(resp.Body)
+	if !strings.Contains(string(body), `"path":"/hello"`) {
+		t.Errorf("expected path /hello in response, got %s", body)
+	}
+	if resp.Header.Get("X-Test") != "backend-ok" {
+		t.Errorf("expected X-Test header from backend")
+	}
+}
+
+func TestProxyUnknownService(t *testing.T) {
+	server, _, teardown := setupTestServerWithProxy(t)
+	defer teardown()
+
+	resp, err := http.Get(server.URL + "/ms.unknown/foo")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", resp.StatusCode)
 	}
 }
 

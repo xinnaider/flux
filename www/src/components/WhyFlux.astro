@@ -1,10 +1,10 @@
 ---
 const comparisons = [
-  { metric: "Latency overhead", flux: "~1ms (DNS + redirect)", proxy: "Proxy buffer + forward (varies)" },
-  { metric: "Traffic model", flux: "Client direct to service", proxy: "All traffic through proxy" },
-  { metric: "Configuration", flux: "REST API, no config files", proxy: "YAML/conf, reload required" },
+  { metric: "Latency overhead", flux: "~1ms (redirect) / ~5ms (proxy)", proxy: "Proxy buffer + forward (varies)" },
+  { metric: "Traffic model", flux: "Redirect: client direct. Proxy: through flux.", proxy: "All traffic through proxy" },
+  { metric: "Configuration", flux: "REST API + env vars, no config files", proxy: "YAML/conf, reload required" },
   { metric: "Scaling", flux: "Stateless, add more flux nodes", proxy: "Scale proxy pool + config sync" },
-  { metric: "Best for", flux: "Service discovery + redirect", proxy: "Traffic inspection, TLS termination" },
+  { metric: "Best for", flux: "Internal discovery (redirect) + public APIs behind Nginx (proxy)", proxy: "Traffic inspection, TLS termination" },
 ];
 ---
 
@@ -12,7 +12,7 @@ const comparisons = [
   <div class="why-inner">
     <h2 class="section-label reveal reveal-delay-1">Why Flux?</h2>
     <p class="why-lead reveal reveal-delay-2">
-      Flux is not a proxy. It tells the client where to go — and gets out of the way.
+      Flux can redirect or proxy. Pick the mode that fits your architecture.
     </p>
 
     <div class="table-wrapper reveal reveal-delay-3">
@@ -41,7 +41,7 @@ const comparisons = [
         <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
         <path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <span>Use flux when you need service discovery + redirect. Use a reverse proxy when you need traffic inspection, TLS termination, or content routing.</span>
+      <span>Use flux <strong>redirect mode</strong> for internal service discovery (no overhead). Switch <strong>proxy mode</strong> when you expose flux behind Nginx with HTTPS. One binary, two modes.</span>
     </div>
   </div>
 </section>

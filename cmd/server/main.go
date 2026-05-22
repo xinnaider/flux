@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/xinnaider/flux/internal/api"
+	"github.com/xinnaider/flux/internal/balancer"
 	"github.com/xinnaider/flux/internal/config"
 	"github.com/xinnaider/flux/internal/health"
 	"github.com/xinnaider/flux/internal/registry"
@@ -40,8 +41,19 @@ func main() {
 	checker := health.NewChecker(reg, cfg.CleanupInterval)
 	go checker.Start(ctx)
 
-	// Setup HTTP server.
+	// Setup HTTP handler with optional reverse proxy.
 	handler := api.NewHandler(reg)
+	if cfg.ProxyMode {
+		proxy := balancer.NewProxy(reg, balancer.ProxyConfig{
+			Timeout:        cfg.ProxyTimeout,
+			MaxIdleConns:   cfg.ProxyIdleConns,
+			MaxIdlePerHost: cfg.ProxyIdlePerHost,
+		})
+		handler.SetProxy(proxy)
+		log.Println("[main] proxy mode enabled (reverse proxy, no redirects)")
+	} else {
+		log.Println("[main] redirect mode enabled (302 redirects)")
+	}
 	mux := http.NewServeMux()
 	handler.RegisterRoutes(mux)
 

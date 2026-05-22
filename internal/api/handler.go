@@ -7,15 +7,23 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/xinnaider/flux/internal/balancer"
 	"github.com/xinnaider/flux/internal/registry"
 )
 
 type Handler struct {
 	registry registry.Registry
+	proxy    *balancer.Proxy
 }
 
 func NewHandler(r registry.Registry) *Handler {
 	return &Handler{registry: r}
+}
+
+// SetProxy enables reverse proxy mode. When set, the catch-all handler
+// will proxy requests to backends instead of returning a 302 redirect.
+func (h *Handler) SetProxy(p *balancer.Proxy) {
+	h.proxy = p
 }
 
 // Register handles POST /register
@@ -184,7 +192,11 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 			})
 			return
 		}
-		h.Redirect(w, r)
+		if h.proxy != nil {
+			h.proxy.ServeHTTP(w, r)
+		} else {
+			h.Redirect(w, r)
+		}
 	})
 }
 

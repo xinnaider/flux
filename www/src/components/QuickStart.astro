@@ -1,10 +1,14 @@
 ---
 const curlRegister = `curl -X POST http://localhost:8080/register \\
   -H "Content-Type: application/json" \\
-  -d '{"name":"my-service","address":"10.0.0.1:9000"}'`;
+  -d '{"name":"my-service","host":"10.0.0.1","port":9000}'`;
 
-const curlDiscover = `curl http://localhost:8080/discover/my-service
+const curlRedirect = `curl -v http://localhost:8080/discover/my-service
 # 302 Found → http://10.0.0.1:9000`;
+
+const curlProxy = `# PROXY_MODE=true
+curl -v http://localhost:8080/discover/my-service
+# 200 OK  ← backend response directly`;
 ---
 
 <section class="quickstart-section reveal" id="quickstart">
@@ -14,19 +18,29 @@ const curlDiscover = `curl http://localhost:8080/discover/my-service
 
     <div class="code-block reveal reveal-delay-3">
       <div class="code-header">
-        <span class="code-lang">Shell</span>
+        <span class="code-lang">Register</span>
         <button class="copy-btn cta-button" data-copy={curlRegister}>Copy</button>
       </div>
-      <pre class="code-body"><code><span class="code-prompt">$</span><span class="cursor-pulse">▌</span> {curlRegister}</code></pre>
+      <pre class="code-body"><code><span class="code-prompt">$</span> {curlRegister}
+{"instance_id":"10.0.0.1:9000","ttl_seconds":15}</code></pre>
     </div>
 
     <div class="code-block code-result reveal reveal-delay-4">
       <div class="code-header">
-        <span class="code-lang">Response</span>
+        <span class="code-lang">Redirect mode (default)</span>
       </div>
       <pre class="code-body"><code><span class="code-prompt">$</span> curl http://localhost:8080/discover/my-service
 <span class="code-output">302 Found</span>
 <span class="code-output code-dim">Location: http://10.0.0.1:9000</span></code></pre>
+    </div>
+
+    <div class="code-block code-result reveal reveal-delay-5">
+      <div class="code-header">
+        <span class="code-lang">Proxy mode (<code>PROXY_MODE=true</code>)</span>
+      </div>
+      <pre class="code-body"><code><span class="code-prompt">$</span> curl http://localhost:8080/discover/my-service
+<span class="code-output">200 OK</span>
+<span class="code-output code-dim">{"hello":"world"}  ← response from backend</span></code></pre>
     </div>
 
     <div class="quickstart-cta reveal">
