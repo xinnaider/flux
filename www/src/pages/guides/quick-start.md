@@ -14,13 +14,8 @@ Start flux and Redis, register a service, discover it.
 ## Use the Public Image (no clone)
 
 ```bash
-# Start Redis
 docker run -d --name redis redis:7-alpine
-
-# Run flux (public image, no login needed)
 docker run -d --name flux --link redis -e REDIS_ADDR=redis:6379 -p 8080:8080 ghcr.io/xinnaider/flux
-
-# Check it's alive
 curl http://localhost:8080/health
 ```
 
@@ -77,10 +72,7 @@ curl -v http://localhost:8080/ms.auth/login
 ## Run Locally (without Docker)
 
 ```bash
-# Requires Redis on localhost:6379
 go run ./cmd/server
-
-# Or build first
 go build -o bin/flux ./cmd/server
 ./bin/flux
 ```

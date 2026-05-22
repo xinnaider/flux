@@ -13,10 +13,7 @@ flux stores service instances in Redis, receives heartbeat load from each instan
 ```bash
 docker run -d --name redis redis:7-alpine
 docker run -d --name flux --link redis -e REDIS_ADDR=redis:6379 -p 8080:8080 ghcr.io/xinnaider/flux
-
-# Check it's alive
 curl http://localhost:8080/health
-# {"status":"ok"}
 ```
 
 ### With Docker Compose (recommended for development)
@@ -143,14 +140,9 @@ Instances are **hash entries** with a TTL. If the heartbeat stops, the hash expi
 ## Running Locally
 
 ```bash
-# With Go (requires Redis)
 go run ./cmd/server
-
-# Or build first
 go build -o bin/flux ./cmd/server
 ./bin/flux
-
-# With Docker (build local)
 docker build -t flux .
 docker run -p 8080:8080 --network host flux
 ```
