@@ -11,21 +11,6 @@ Start flux and Redis, register a service, discover it.
 - [Docker](https://docs.docker.com/get-docker/)
 - [Go](https://go.dev/dl/) (for local development)
 
-## Use the Public Image (no clone)
-
-```bash
-# Start Redis
-docker run -d --name redis redis:7-alpine
-
-# Run flux (public image, no login needed)
-docker run -d --name flux --link redis -e REDIS_ADDR=redis:6379 -p 8080:8080 ghcr.io/xinnaider/flux
-
-# Check it's alive
-curl http://localhost:8080/health
-```
-
-Then jump to [Register a Service](#register-a-service).
-
 ## Clone the Repository
 
 ```bash
