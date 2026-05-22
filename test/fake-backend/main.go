@@ -24,7 +24,7 @@ var (
 
 func init() {
 	p := getEnv("INSTANCE_PORT", "3000")
-	fmt.Sscanf(p, "%d", &instancePort)
+	_, _ = fmt.Sscanf(p, "%d", &instancePort)
 }
 
 func getEnv(key, fallback string) string {
@@ -107,7 +107,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 func healthHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status":"ok"}`))
+	_, _ = w.Write([]byte(`{"status":"ok"}`))
 }
 
 func main() {
@@ -129,7 +129,7 @@ func main() {
 	// heartbeat loop
 	go func() {
 		for range time.Tick(8 * time.Second) {
-			heartbeat()
+			_ = heartbeat()
 		}
 	}()
 

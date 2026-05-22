@@ -251,7 +251,7 @@ func TestProxyToBackend(t *testing.T) {
 	host := strings.TrimPrefix(backend.URL, "http://")
 	hostParts := strings.Split(host, ":")
 	port := 0
-	fmt.Sscanf(hostParts[1], "%d", &port)
+	_, _ = fmt.Sscanf(hostParts[1], "%d", &port)
 
 	_, err := reg.Register(ctx, registry.RegisterRequest{
 		Name: "ms.test", Host: hostParts[0], Port: port,

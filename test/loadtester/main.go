@@ -47,7 +47,7 @@ func getEnv(k, fallback string) string {
 
 func atoi(s string) int {
 	n := 0
-	fmt.Sscanf(s, "%d", &n)
+	_, _ = fmt.Sscanf(s, "%d", &n)
 	return n
 }
 
@@ -139,7 +139,7 @@ func main() {
 				if backend == "" {
 					backend = "unknown"
 				}
-				io.Copy(io.Discard, resp.Body)
+				_, _ = io.Copy(io.Discard, resp.Body)
 				resp.Body.Close()
 				results <- result{
 					duration:   time.Since(t0),
