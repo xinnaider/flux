@@ -16,14 +16,19 @@ This starts:
 - **flux** on port `8080`
 - **Redis 7** on port `6379`
 
-## GHCR Pull (private image)
+## Public Image (Pull & Run)
 
-The flux image is hosted on GitHub Container Registry and requires authentication:
+The flux image is published to GitHub Container Registry — no authentication needed:
 
 ```bash
-echo $PAT | docker login ghcr.io -u xinnaider --password-stdin
-docker pull ghcr.io/xinnaider/flux
 docker run -e REDIS_ADDR=host.docker.internal:6379 -p 8080:8080 ghcr.io/xinnaider/flux
+```
+
+Pull a specific version:
+
+```bash
+docker pull ghcr.io/xinnaider/flux
+docker pull ghcr.io/xinnaider/flux:<sha>
 ```
 
 ## Docker Build

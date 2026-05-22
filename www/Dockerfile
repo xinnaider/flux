@@ -7,10 +7,11 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Final stage — nginx serves static site
-FROM nginx:alpine
+# Final stage — node serves static files
+FROM node:22-alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN npm i -g serve
+COPY --from=build /app/dist /app/dist
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "/app/dist", "-l", "80"]
