@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="www/public/favicon.svg" width="120" height="120" alt="flux">
+</p>
+
 # flux
 
 **Service Registry + Redirect / Reverse Proxy Load Balancer.**

@@ -1,6 +1,6 @@
 # flux — Agent Context
 
-Agentes: leia `CLAUDE.md` na raiz do projeto primeiro.
+Fonte unica de verdade sobre o projeto. Leia antes de qualquer alteracao.
 
 ## Projeto
 
@@ -139,3 +139,29 @@ Nginx faz SSL termination, flux faz service discovery + least-connections.
 | Proxy | ~7.5k req/s |
 
 Gargalo tipico sao os backends, nao flux. Escala horizontal atras do Nginx.
+
+## Regras Cruciais
+
+1. **Backward compat**: `PROXY_MODE=false` (redirect) é o default. Nao quebrar esse comportamento
+2. **Nao hardcodar URLs**: flux expoe `http://` — HTTPS é responsabilidade do Nginx na frente
+3. **Nova feature = teste**: toda nova funcionalidade precisa de teste no `internal/` correspondente
+4. **Director obrigatorio**: Go 1.22+ `httputil.ReverseProxy` exige `Director` explicito (nao deixar nil)
+5. **Testes antes de commit**: sempre rodar `go test -v -race ./...` (precisa Redis em localhost:6379)
+
+## Comandos Rapidos
+
+```powershell
+# Testes (requer Redis)
+go test -v -race ./...
+
+# Build
+go build -o bin/flux ./cmd/server
+
+# Run local (precisa Redis)
+go run ./cmd/server
+
+# Load test
+cd test
+$env:NUM_REQUESTS="5000"; $env:CONCURRENCY="300"
+docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from loadtester-1
+```
