@@ -77,12 +77,38 @@ Env vars cruciais:
 | `HEARTBEAT_TTL` | `15s` | TTL da instancia no Redis |
 | `CLEANUP_INTERVAL` | `5s` | Limpeza de instancias expiradas |
 
-### Testes
+### Testes (rodar ANTES de qualquer commit)
+
+Mesma suite do CI. Comandos exatos:
+
+```powershell
+# 1. Lint
+docker run --rm -v "${PWD}:/app" -w /app golangci/golangci-lint:v1.64.8 golangci-lint run --timeout=5m
+
+# 2. Testes Go (requer Redis em localhost:6379)
+go test -v -race ./...
+
+# 3. Build Go
+go build -o /dev/null ./cmd/server
+
+# 4. Build frontend (Astro)
+cd www
+npm ci
+npm run build
+cd ..
+
+# 5. (opcional) Load test com Docker
+cd test
+docker compose -f docker-compose.test.yml build
+$env:NUM_REQUESTS="1000"; $env:CONCURRENCY="100"
+docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from loadtester-1
+```
+
+CI executa todos esses passos. Nao commitar sem passar pelo menos lint + testes + build Go + build www.
 
 - Requer Redis em `localhost:6379` (ou `REDIS_TEST_ADDR`)
 - Usa DB separado por pacote (1 = registry, 2 = api, 3 = proxy)
-- `go test -v -race ./...` antes de commit
-- Testes skipam se Redis nao disponivel
+- Testes Go skipam se Redis nao disponivel
 
 ### Load Test (`test/`)
 

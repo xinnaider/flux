@@ -36,7 +36,7 @@ curl -v http://localhost:8080/discover/my-service
 
     <div class="code-block code-result reveal reveal-delay-5">
       <div class="code-header">
-        <span class="code-lang">Proxy mode (<code>PROXY_MODE=true</code>)</span>
+        <span class="code-lang">Proxy mode (<span class="code-inline">PROXY_MODE=true</span>)</span>
       </div>
       <pre class="code-body"><code><span class="code-prompt">$</span> curl http://localhost:8080/discover/my-service
 <span class="code-output">200 OK</span>
@@ -87,6 +87,10 @@ curl -v http://localhost:8080/discover/my-service
   color: rgba(255,255,255,0.4);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+.code-inline {
+  font-family: var(--font-code);
+  opacity: 0.8;
 }
 .copy-btn {
   font-family: var(--font-code);
