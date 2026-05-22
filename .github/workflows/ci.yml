@@ -9,7 +9,6 @@ on:
 env:
   REGISTRY: ghcr.io
   FLUX_IMAGE: ghcr.io/${{ github.repository_owner }}/flux
-  FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/flux-frontend
 
 jobs:
   # ── Quality: lint + test + build ──────────────────────────────
@@ -90,30 +89,4 @@ jobs:
             ${{ env.FLUX_IMAGE }}:latest
             ${{ env.FLUX_IMAGE }}:${{ github.sha }}
 
-  # ── Build & push frontend image ───────────────────────────────
-  build-frontend:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: quality
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: www
-          push: true
-          tags: |
-            ${{ env.FRONTEND_IMAGE }}:latest
-            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
