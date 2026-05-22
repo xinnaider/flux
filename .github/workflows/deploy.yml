@@ -109,8 +109,11 @@ jobs:
             echo "--- Logging in to ghcr.io ---"
             echo "$GH_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            echo "--- Pulling pre-built images ---"
+            echo "--- Pulling latest compose file ---"
             cd /root/flux
+            git pull origin main
+
+            echo "--- Pulling pre-built images ---"
             docker compose pull
 
             echo "--- Restarting containers ---"
