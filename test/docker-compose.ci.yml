@@ -1,0 +1,20 @@
+# CI test suite — roda lint + testes Go + build Go + build Astro em container
+# Uso: docker compose -f docker-compose.ci.yml up --abort-on-container-exit --exit-code-from test
+services:
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  test:
+    build:
+      context: ..
+      dockerfile: test/Dockerfile.ci
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_TEST_ADDR: redis:6379

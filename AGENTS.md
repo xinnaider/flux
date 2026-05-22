@@ -41,8 +41,11 @@ flux/
 │   └── registry/
 │       ├── registry.go         ← RedisRegistry (Register, Heartbeat, GetInstance)
 │       └── registry_test.go
-├── test/                       ← Load test framework
-│   ├── docker-compose.test.yml
+├── test/                       ← Test framework
+│   ├── docker-compose.test.yml ← Load test (3 fakes + 4 loadtesters)
+│   ├── docker-compose.ci.yml   ← CI suite em container (lint + test + build)
+│   ├── Dockerfile.ci           ← Container c/ Go + Node + golangci-lint
+│   ├── entrypoint.sh           ← Script que roda a suite
 │   ├── fake-backend/           ← App fake que registra + heartbeat
 │   └── loadtester/             ← Testador concorrente c/ report
 ├── www/                        ← Landing page (Astro)
@@ -79,13 +82,22 @@ Env vars cruciais:
 
 ### Testes (rodar ANTES de qualquer commit)
 
-Mesma suite do CI. Comandos exatos:
+Mesma suite do CI. Dois jeitos de rodar:
+
+**Opcao 1 — Container (recomendado):** sem precisar instalar Go/Node/Redis local.
+
+```powershell
+cd test
+docker compose -f docker-compose.ci.yml up --abort-on-container-exit --exit-code-from test
+```
+
+**Opcao 2 — Local:** requer Go 1.22+, Node 22+, Redis em `localhost:6379`.
 
 ```powershell
 # 1. Lint
 docker run --rm -v "${PWD}:/app" -w /app golangci/golangci-lint:v1.64.8 golangci-lint run --timeout=5m
 
-# 2. Testes Go (requer Redis em localhost:6379)
+# 2. Testes Go (requer Redis)
 go test -v -race ./...
 
 # 3. Build Go
@@ -96,21 +108,9 @@ cd www
 npm ci
 npm run build
 cd ..
-
-# 5. (opcional) Load test com Docker
-cd test
-docker compose -f docker-compose.test.yml build
-$env:NUM_REQUESTS="1000"; $env:CONCURRENCY="100"
-docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from loadtester-1
 ```
 
-CI executa todos esses passos. Nao commitar sem passar pelo menos lint + testes + build Go + build www.
-
-- Requer Redis em `localhost:6379` (ou `REDIS_TEST_ADDR`)
-- Usa DB separado por pacote (1 = registry, 2 = api, 3 = proxy)
-- Testes Go skipam se Redis nao disponivel
-
-### Load Test (`test/`)
+**Load test (opcional):**
 
 ```powershell
 cd test
@@ -118,7 +118,10 @@ $env:NUM_REQUESTS="5000"; $env:CONCURRENCY="300"
 docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from loadtester-1
 ```
 
-4 loadtesters paralelos: `loadtester-1` a `loadtester-4`.
+CI executa todos esses passos. Nao commitar sem passar pelo menos lint + testes + build Go + build www.
+
+- Testes Go usam DB separado por pacote (1 = registry, 2 = api, 3 = proxy)
+- Testes Go skipam se Redis nao disponivel
 
 ## Producao com Nginx
 
