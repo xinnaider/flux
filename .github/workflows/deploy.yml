@@ -55,8 +55,8 @@ jobs:
           npm ci
           npm run build
 
-  build-and-deploy:
-    name: Build images & deploy
+  build-and-push:
+    name: Build & push images
     needs: test
     runs-on: ubuntu-latest
     environment: production
@@ -95,32 +95,4 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/flux-frontend:latest
             ghcr.io/${{ github.repository_owner }}/flux-frontend:${{ github.sha }}
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.2
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          envs: GH_TOKEN
-          script: |
-            set -e
-            echo "--- Logging in to ghcr.io ---"
-            echo "$GH_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            echo "--- Pulling latest compose file ---"
-            cd /root/flux
-            git fetch origin
-            git reset --hard origin/main
-
-            echo "--- Pulling pre-built images ---"
-            docker compose pull
-
-            echo "--- Restarting containers ---"
-            docker compose up -d --force-recreate --remove-orphans
-
-            echo "--- Pruning stale images ---"
-            docker image prune -f
-
-            echo "--- Done ---"
+      # Deploy www: Dokploy auto-deploy (GitHub webhook) — sem SSH
