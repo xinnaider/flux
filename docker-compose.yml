@@ -1,5 +1,12 @@
 services:
   www:
-    image: ghcr.io/xinnaider/flux-frontend:latest
-    ports:
-      - "8000:80"
+    build:
+      context: ./www
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
